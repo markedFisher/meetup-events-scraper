@@ -1,0 +1,99 @@
+onst examplePath = path.join(__dirname, 'config', 'settings.example.json');
+const userPath = path.join(__dirname, 'config', 'settings.json');
+
+let config = loadJsonSafe(userPath);
+if (!config) {
+console.warn('[config] settings.json not found or invalid, falling back to settings.example.json');
+config = loadJsonSafe(examplePath);
+}
+
+if (!config) {
+throw new Error('Unable to load configuration file. Ensure settings.json or settings.example.json exists and is valid JSON.');
+}
+
+// Optionally merge in data/input.sample.json searchUrls if config searchUrls missing
+if (!Array.isArray(config.searchUrls) || config.searchUrls.length === 0) {
+const sampleInputPath = path.join(__dirname, '..', 'data', 'input.sample.json');
+const sampleInput = loadJsonSafe(sampleInputPath);
+if (sampleInput && Array.isArray(sampleInput.searchUrls) && sampleInput.searchUrls.length > 0) {
+console.warn('[config] No searchUrls defined in config, using data/input.sample.json searchUrls instead.');
+config.searchUrls = sampleInput.searchUrls;
+}
+}
+
+if (!Array.isArray(config.searchUrls) || config.searchUrls.length === 0) {
+throw new Error('No searchUrls defined in configuration. Please add at least one Meetup search URL.');
+}
+
+config.maxItems = typeof config.maxItems === 'number' && config.maxItems > 0 ? config.maxItems : 200;
+config.eventType = config.eventType || 'ALL';
+config.concurrency = typeof config.concurrency === 'number' && config.concurrency > 0 ? config.concurrency : 3;
+
+if (!config.export) {
+config.export = {};
+}
+config.export.outputDir = config.export.outputDir || path.join(__dirname, '..', 'data');
+config.export.baseFileName = config.export.baseFileName || 'meetup_events';
+if (!Array.isArray(config.export.formats) || config.export.formats.length === 0) {
+config.export.formats = ['json', 'csv'];
+}
+
+return config;
+}
+
+async function scrapeAll(config) {
+const allEvents = [];
+const { searchUrls, maxItems, eventType } = config;
+
+console.log(`[scraper] Starting scrape for ${searchUrls.length} search URL(s)...`);
+for (const url of searchUrls) {
+console.log(`[scraper] Fetching events from: ${url}`);
+try {
+const events = await scrapeMeetupSearch(url, { maxItems, eventType, searchUrl: url });
+console.log(`[scraper] Collected ${events.length} events from ${url}`);
+allEvents.push(...events);
+} catch (err) {
+console.error(`[scraper] Error while scraping ${url}:`, err.message);
+}
+}
+
+// Deduplicate events by (id || eventUrl)
+const map = new Map();
+for (const event of allEvents) {
+const key = `${event.id || ''}|${event.eventUrl || ''}`;
+if (!map.has(key)) {
+map.set(key, event);
+}
+}
+
+const uniqueEvents = Array.from(map.values());
+console.log(`[scraper] Total collected events (after dedupe): ${uniqueEvents.length}`);
+
+return uniqueEvents;
+}
+
+async function main() {
+try {
+const config = loadConfig();
+const events = await scrapeAll(config);
+
+if (events.length === 0) {
+console.warn('[scraper] No events found. Nothing to export.');
+return;
+}
+
+await exportDataset(events, config.export);
+console.log('[scraper] Export complete.');
+} catch (err) {
+console.error('[scraper] Fatal error:', err.message);
+process.exitCode = 1;
+}
+}
+
+if (require.main === module) {
+main();
+}
+
+module.exports = {
+main
+};
