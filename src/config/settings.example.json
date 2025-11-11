@@ -1,0 +1,14 @@
+{
+  "searchUrls": [
+    "https://www.meetup.com/find/?keywords=ai&location=pt--Lagos&eventType=online",
+    "https://www.meetup.com/find/?keywords=software%20engineering&location=us--New%20York&eventType=online"
+  ],
+  "maxItems": 120,
+  "eventType": "ALL",
+  "concurrency": 3,
+  "export": {
+    "outputDir": "data",
+    "baseFileName": "meetup_events",
+    "formats": ["json", "csv", "xlsx", "html", "xml"]
+  }
+}
