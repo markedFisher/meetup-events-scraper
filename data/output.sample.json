@@ -1,0 +1,41 @@
+[
+  {
+    "dateTime": "2024-10-30T19:00:00Z",
+    "description": "Imagine having a few hundred extra pounds in your pocket each month—or even a few thousand...",
+    "eventType": "ONLINE",
+    "eventUrl": "https://www.meetup.com/lifestyle-launch-coaches/events/303856670/",
+    "featuredEventPhoto": {
+      "highResUrl": "https://secure.meetupstatic.com/photos/event/3/7/6/highres_522240886.jpeg"
+    },
+    "id": "303856670",
+    "group": {
+      "name": "Lifestyle Launch Coaches",
+      "urlname": "lifestyle-launch-coaches"
+    },
+    "rsvps": {
+      "totalCount": 2
+    },
+    "title": "Learn How To Create An Easy Income With AI",
+    "venue": {
+      "name": "Online event"
+    },
+    "searchUrl": "https://www.meetup.com/find/?keywords=ai&location=pt--Lagos&eventType=online"
+  },
+  {
+    "dateTime": "2024-10-30T15:00:00Z",
+    "title": "The Ice AI Collective (CORE) Virtual Onboarding Sessions",
+    "eventType": "ONLINE",
+    "rsvps": {
+      "totalCount": 1
+    },
+    "group": {
+      "name": "The ICE Ai Collective Meetup Group for Curious People",
+      "urlname": ""
+    },
+    "eventUrl": "https://www.meetup.com/the-ice-ai-collective-meet-up-group-for-curious-people/events/303940582/",
+    "venue": {
+      "name": "Online event"
+    },
+    "searchUrl": "https://www.meetup.com/find/?keywords=ai&location=pt--Lagos&eventType=online"
+  }
+]
